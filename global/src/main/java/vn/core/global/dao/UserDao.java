@@ -22,20 +22,14 @@ public class UserDao {
         this.databaseConfig = databaseConfig;
     }
 
-    public List<User> getAllUsers(int page) {
-        return getAllUsers(page, 10);
-    }
 
-    public List<User> getAllUsers(int page, int pageSize) {
+
+    public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, name, email FROM users OFFSET ? LIMIT ?";
-        int offset = (page - 1) * pageSize;
+        String sql = "SELECT id, name, email FROM users ";
 
         try (Connection conn = databaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, offset);
-            stmt.setInt(2, pageSize);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {

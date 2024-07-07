@@ -22,8 +22,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/users")
-    public List<User> getUsers(@RequestParam(defaultValue = "1") int page) {
-        log.info("[START] request get users of page {}", page);
-        return userService.getAllUsers(page);
+    public List<User> getUsers() {
+        return userService.getAllUsers();
     }
 }
