@@ -38,7 +38,13 @@ database.url=jdbc:postgresql://postgres-v16:5432/postgres
 ```cmd
 docker network connect line-postgres-5432 postgres-v16
 ```
-## 4. Build and run container
+## 6. Build and run container
+
+cd to folder has dockerfile and open the cmd and run:
+
+```cmd
+docker build -t springboot-crud-postgres-service .
+```
 
 ```cmd
 docker run -d  -p 8080:8080 --network line-postgres-5432 springboot-crud-postgres-service
