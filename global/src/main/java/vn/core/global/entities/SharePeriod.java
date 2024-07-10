@@ -5,18 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
+public class SharePeriod {
+    private int shareId;
     private int userId;
-    private String email;
-    private String password;
-    private String gender;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private int sharedWithUserId;
+    private Date sharedDate;
 }

@@ -22,23 +22,100 @@ public class UserDao {
         this.databaseConfig = databaseConfig;
     }
 
-
-
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, name, email FROM users ";
+        String sql = "SELECT User_id, email, gender, created_at, updated_at FROM \"User\"";
 
+        try (Connection conn = databaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getInt("User_id"),
+                        rs.getString("email"),
+                        null, // We don't select password for security reasons
+                        rs.getString("gender"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
+                ));
+            }
+        } catch (SQLException e) {
+            log.error("Failed to fetch Uer", e);
+        }
+        return users;
+    }
+
+    public User getUserById(int UerId) {
+        String sql = "SELECT User_id, email, gender, created_at, updated_at FROM \"User\" WHERE User_id = ?";
         try (Connection conn = databaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setInt(1, UerId);
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    users.add(new User(rs.getInt("id"), rs.getString("name"), rs.getString("email")));
+                if (rs.next()) {
+                    return new User(
+                            rs.getInt("User_id"),
+                            rs.getString("email"),
+                            null,
+                            rs.getString("gender"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at")
+                    );
                 }
             }
         } catch (SQLException e) {
-            log.error("Failed to fetch users from the database", e);
+            log.error("Failed to fetch Uer by ID", e);
         }
-        return users;
+        return null;
+    }
+
+    public boolean createUser(User User) {
+        String sql = "INSERT INTO \"User\" (email, password, gender) VALUES (?, ?, ?)";
+        try (Connection conn = databaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, User.getEmail());
+            stmt.setString(2, User.getPassword());
+            stmt.setString(3, User.getGender());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            log.error("Failed to create Uer", e);
+            return false;
+        }
+    }
+
+    public boolean updateUser(User User) {
+        String sql = "UPDATE \"User\" SET email = ?, gender = ?, updated_at = CURRENT_TIMESTAMP WHERE User_id = ?";
+        try (Connection conn = databaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, User.getEmail());
+            stmt.setString(2, User.getGender());
+            stmt.setInt(3, User.getUserId());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            log.error("Failed to update User", e);
+            return false;
+        }
+    }
+
+    public boolean deleteUser(int UerId) {
+        String sql = "DELETE FROM \"User\" WHERE User_id = ?";
+        try (Connection conn = databaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, UerId);
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            log.error("Failed to delete Uer", e);
+            return false;
+        }
     }
 }
