@@ -34,7 +34,7 @@ public class UserDao {
                 users.add(new User(
                         rs.getInt("User_id"),
                         rs.getString("email"),
-                        null, // We don't select password for security reasons
+                        null,
                         rs.getString("gender"),
                         rs.getTimestamp("created_at"),
                         rs.getTimestamp("updated_at")
@@ -50,7 +50,6 @@ public class UserDao {
         String sql = "SELECT User_id, email, gender, created_at, updated_at FROM \"User\" WHERE User_id = ?";
         try (Connection conn = databaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, UerId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -66,6 +65,33 @@ public class UserDao {
             }
         } catch (SQLException e) {
             log.error("Failed to fetch Uer by ID", e);
+        }
+        return null;
+    }
+
+    public User getUserByEmail(String userEmail) {
+        String sql = "SELECT User_id, email, password, gender, created_at, updated_at FROM \"User\" WHERE email LIKE ?";
+        try (Connection conn = databaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + userEmail + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println("Hello World!");
+                    System.out.println("Hello World!");
+                    System.out.println("Hello World!");
+                    return new User(
+                            rs.getInt("User_id"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("gender"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Failed to fetch Uer by email", e);
+            return null;
         }
         return null;
     }

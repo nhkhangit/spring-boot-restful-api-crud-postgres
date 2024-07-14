@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
     private int userId;
     private String email;
     private String password;
